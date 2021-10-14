@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import * as faker from 'faker';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 export type Product = {
     id: string;
@@ -12,7 +11,7 @@ export class ProductsService {
     private products: Product[];
 
     constructor() {
-        this.products = require('../../../products.json')
+        this.products = require('../../products.json')
     }
 
     getAll() {
@@ -20,6 +19,14 @@ export class ProductsService {
     }
 
     search(title: string) {
-        return this.products.filter(product => product.title.includes(title));
+        return this.products.filter(product => product.title.toLowerCase().includes(title.toLowerCase()));
+    }
+
+    get(id: string) {
+        const res = this.products.find(product => product.id === id);
+        if (!res) {
+            throw new NotFoundException();
+        }
+        return res;
     }
 }

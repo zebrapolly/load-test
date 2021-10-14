@@ -15,7 +15,6 @@ export class CardsService {
         } else {
             card[productId] = 1;
         }
-        console.log(this.cards);
         return card;
     }
 

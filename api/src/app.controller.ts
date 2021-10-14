@@ -1,4 +1,4 @@
-import { Controller, Get, Request, Query, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Request, Query, Post, Body, UseGuards, Param, HttpCode } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
@@ -14,6 +14,7 @@ export class AppController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
+  @HttpCode(200)
   @Post('auth/login')
   async login(@Request() req) {
     return this.authService.login(req.user);
@@ -37,16 +38,21 @@ export class AppController {
     return this.productsService.search(title);
   }
 
+  @Get('products/:productId')
+  getProduct(@Param('productId') productId: string) {
+    return this.productsService.get(productId);
+  }
+
   @Post('cards')
+  @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   addProduct(@Request() req) {
-    console.log(req.user, req.body);
     return this.cardService.addProduct(req.user.userId, req.body.productId);
   }
 
   @Get('cards')
   @UseGuards(JwtAuthGuard)
   getCard(@Request() req) {
-    return this.productsService.search(req.user.id);
+    return this.cardService.get(req.user.userId);
   }
 }

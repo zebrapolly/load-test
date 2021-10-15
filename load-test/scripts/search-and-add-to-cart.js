@@ -1,21 +1,39 @@
 import http from 'k6/http';
-import {  check, group, sleep } from 'k6';
+import {  check, group, sleep, fail } from 'k6';
 import { SharedArray } from "k6/data";
 
 export let options = {
     stages: [
-        // { duration: '1m', target: 60 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
+        { duration: '1m', target: 600 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
         // { duration: '10m', target: 60 }, // stay at 60 users for 10 minutes
-        { duration: '3m', target: 100 }, // ramp-up to 100 users over 3 minutes (peak hour starts)
-        { duration: '2m', target: 100 }, // stay at 100 users for short amount of time (peak hour)
-        { duration: '3m', target: 60 }, // ramp-down to 60 users over 3 minutes (peak hour ends)
-        { duration: '10m', target: 60 }, // continue at 60 for additional 10 minutes
-        { duration: '5m', target: 0 },
+        // { duration: '3m', target: 100 }, // ramp-up to 100 users over 3 minutes (peak hour starts)
+        // { duration: '2m', target: 100 }, // stay at 100 users for short amount of time (peak hour)
+        // { duration: '3m', target: 60 }, // ramp-down to 60 users over 3 minutes (peak hour ends)
+        // { duration: '10m', target: 60 }, // continue at 60 for additional 10 minutes
+        // { duration: '5m', target: 0 },
     ],
 }
-const HOST = 'http://localhost:3000';
-const logins = new SharedArray("logins", function() { return JSON.parse(open('../../users.json')); });
+const HOST = 'http://api:3000';
+const logins = new SharedArray("logins", function() { return JSON.parse(open('../users.json')); });
 const searchVars = new SharedArray("keywords", function() { return JSON.parse(open('../datasets/keywords.json')); });
+
+export function setup() {
+    let res;
+    let count = 0;
+    testRequest();
+    function testRequest() {
+        res = http.get(HOST);
+        if (!res.status) {
+            if (count > 1) {
+                fail('Server host unavailable');
+            }
+            count++
+            console.log(`Server host unavailable. retry attempt ${count}`)
+            sleep(10);
+            testRequest();
+        }
+    }
+}
 
 export default function () {
     group('search and pu to a card',(_) => {
@@ -104,6 +122,7 @@ export default function () {
         sleep(1);
     });
 }
+
 
 function randomIntFromInterval(min, max) { // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min)

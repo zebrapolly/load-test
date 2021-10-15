@@ -1,4 +1,10 @@
 version: "3.9"
+
+networks:
+  common:
+    external:
+      name: load_infra
+
 services:
   api:
     build:
@@ -22,15 +28,33 @@ services:
       NODE_ENV: development
       JWT_SECRET: 1hard_to_guess_secret7890a
       PORT: 3000
+    networks:
+      - common
     ports:
       - 3000:3000
       - 9229:9229
 
 #  postgres:
-#    image: postgres:10.4
+#    image: postgres:14.0
 #    environment:
 #      POSTGRES_USER: user
 #      POSTGRES_PASSWORD: password
 #      POSTGRES_DB: db
 #    ports:
-#      - 35000:5432
+#      - 3010:5432
+
+  k6:
+    image: loadimpact/k6:latest
+    ports:
+      - "6565:6565"
+    command: run /scripts/search-and-add-to-cart.js
+    depends_on:
+      - api
+    environment:
+      - K6_OUT=influxdb=http://influxdb:8086/k6
+    volumes:
+      - ./load-test/scripts:/scripts
+      - ./users.json:/users.json
+      - ./load-test/datasets:/datasets
+    networks:
+      - common

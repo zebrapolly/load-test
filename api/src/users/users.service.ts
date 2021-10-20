@@ -1,19 +1,16 @@
 import { Injectable } from '@nestjs/common';
-
-export type User = {
-    userId: string,
-    username: string,
-    password: string
-};
+import { UsersAdapter } from "../infrastructure/storage";
+import { User } from '../domain';
 
 @Injectable()
 export class UsersService {
     private users;
-    constructor() {
-        this.users = require('../../users.json')
+    constructor(
+        private readonly usersAdapter: UsersAdapter
+    ) {
     }
 
     async findOne(username: string): Promise<User | undefined> {
-        return this.users.find(user => user.username === username);
+        return this.usersAdapter.findOne({ username });
     }
 }

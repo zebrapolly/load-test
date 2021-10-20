@@ -1,29 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-
-export type Product = {
-    id: string;
-    title: string;
-    description: string;
-}
+import { ProductsAdapter } from "../infrastructure";
 
 @Injectable()
 export class ProductsService {
-    private products: Product[];
+    constructor(
+        private readonly productsAdapter: ProductsAdapter
+    ) {}
 
-    constructor() {
-        this.products = require('../../products.json')
-    }
 
     getAll() {
-        return this.products;
+        return this.productsAdapter.find();
     }
 
     search(title: string) {
-        return this.products.filter(product => product.title.toLowerCase().includes(title.toLowerCase()));
+        return this.productsAdapter.find({ title });
     }
 
-    get(id: string) {
-        const res = this.products.find(product => product.id === id);
+    async get (systemId: string) {
+        const res = await this.productsAdapter.findOne({ systemId });
         if (!res) {
             throw new NotFoundException();
         }

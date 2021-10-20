@@ -1,16 +1,26 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProductsService } from './products/products.service';
 import { ProductsModule } from './products/products.module';
 import { CardsModule } from './cards/cards.module';
 import { CardsService } from "./cards/cards.service";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { InfrastructureModule } from "./infrastructure";
 
 @Module({
-  imports: [AuthModule, UsersModule, ProductsModule, CardsModule],
+  imports: [TypeOrmModule.forRoot({
+    type: 'postgres',
+    host: process.env.TYPEORM_HOST,
+    port: Number(process.env.TYPEORM_PORT),
+    username: process.env.TYPEORM_USERNAME,
+    password: process.env.TYPEORM_PASSWORD,
+    database: process.env.TYPEORM_DATABASE,
+    entities: ["/src/infrastructure/storage/**/*.model.ts"],
+    synchronize: true,
+  }), AuthModule, UsersModule, ProductsModule, CardsModule, InfrastructureModule],
   controllers: [AppController],
-  providers: [AppService, ProductsService, CardsService],
+  providers: [ProductsService, CardsService],
 })
 export class AppModule {}

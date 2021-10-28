@@ -24,7 +24,7 @@ export function setup() {
     function testRequest() {
         res = http.get(HOST);
         if (!res.status) {
-            if (count > 1) {
+            if (count > 10) {
                 fail('Server host unavailable');
             }
             count++
@@ -36,7 +36,7 @@ export function setup() {
 }
 
 export default function () {
-    group('search and pu to a card',(_) => {
+    group('search and put to a card',(_) => {
         let params = {
             headers: {
                 'Content-Type': 'application/json',

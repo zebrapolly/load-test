@@ -21,7 +21,6 @@ COPY . .
 
 # Build the app to the /dist folder
 RUN npm run build
-
 ################
 ## PRODUCTION ##
 ################
@@ -43,6 +42,3 @@ EXPOSE 8080
 # Run app
 CMD [ "node", "dist/main" ]
 
-# Example Commands to build and run the dockerfile
-# docker build -t thomas-nest .
-# docker run thomas-nest

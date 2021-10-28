@@ -16,16 +16,21 @@ services:
     # Mount (.) current directory to the docker container thomas/src/app
     # reflect file changes from host to container
     volumes:
-      - ./api:/usr/src/app
+      - ./api/:/usr/src/app
       - ./api/node_modules:/usr/src/app/node_modules
+      - ./datasets:/usr/src/datasets
     # Run in Debug Mode: npm run start:debug --> Don't forget to start your vscode debugger!
     # Run in dev Mode: npm run start:dev
-    command: npm run start:debug
-#    depends_on:
-#      - postgres
+#    command: npm run start:debug
+    command: bash -c "npm run typeorm migration:run && npm run start:debug"
+    depends_on:
+      - postgres
     environment:
-      DATABASE_URL: postgres://user:password@postgres:5432/db
-      NODE_ENV: development
+      TYPEORM_HOST: postgres
+      TYPEORM_PORT: 5432
+      TYPEORM_USERNAME: ecomm_app_test
+      TYPEORM_PASSWORD: ecomm_app_test
+      TYPEORM_DATABASE: ecommerce
       JWT_SECRET: 1hard_to_guess_secret7890a
       PORT: 3000
     networks:
@@ -34,14 +39,18 @@ services:
       - 3000:3000
       - 9229:9229
 
-#  postgres:
-#    image: postgres:14.0
-#    environment:
-#      POSTGRES_USER: user
-#      POSTGRES_PASSWORD: password
-#      POSTGRES_DB: db
-#    ports:
-#      - 3010:5432
+  postgres:
+    image: postgres:14.0
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    networks:
+      - common
+    ports:
+      - 5432:5432
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   k6:
     image: loadimpact/k6:latest
@@ -54,7 +63,7 @@ services:
       - K6_OUT=influxdb=http://influxdb:8086/k6
     volumes:
       - ./load-test/scripts:/scripts
-      - ./users.json:/users.json
+      - ./datasets/users.json:/users.json
       - ./load-test/datasets:/datasets
     networks:
       - common

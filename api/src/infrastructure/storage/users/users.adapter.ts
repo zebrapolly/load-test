@@ -12,7 +12,9 @@ export class UsersAdapter {
     private usersRepository: Repository<UsersModel>,
   ) {}
 
-    findOne(params: IUserSearch) {
-        return this.usersRepository.findOne({ where: params });
-    }
+  findOne(params: IUserSearch) {
+    const query: FindOneOptions = {};
+    if (params) { query.where = params}
+    return this.usersRepository.findOne(query);
+  }
 }

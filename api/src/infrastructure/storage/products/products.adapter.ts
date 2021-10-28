@@ -12,11 +12,23 @@ export class ProductsAdapter {
     private productsRepository: Repository<ProductsModel>,
   ) {}
 
-    findOne(params?: IProductSearchParams) {
-        return this.productsRepository.findOne({ where: params });
+  findOne(params?: IProductSearchParams) {
+    const query: FindOneOptions = {};
+    if (params.title) {
+      query.where = {
+        title: Raw(alias =>`LOWER(${alias}) Like '%${params.title.toLowerCase()}%'`)
+      }
     }
+    return this.productsRepository.findOne(query);
+  }
 
-    find(params?: IProductSearchParams) {
-        return this.productsRepository.find({ where: params} );
+  find(params?: IProductSearchParams) {
+    const query: FindManyOptions = {};
+    if (params.title) {
+      query.where = {
+        title: Raw(alias =>`LOWER(${alias}) Like '%${params.title.toLowerCase()}%'`)
+      }
     }
+    return this.productsRepository.find(query);
+  }
 }

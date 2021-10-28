@@ -3,15 +3,16 @@ import { User } from '../../../domain';
 
 @Entity('users')
 export class UsersModel implements User {
-    @PrimaryGeneratedColumn()
-    readonly id: number;
+  @PrimaryGeneratedColumn()
+  readonly id: number;
 
-    @Generated('uuid')
-    readonly userId: string;
+  @Column({ name: 'system_id', type: 'uuid'})
+  @Generated('uuid')
+  readonly systemId: string;
 
-    @Column()
-    readonly username: string;
+  @Column()
+  readonly username: string;
 
-    @Column()
-    readonly password: string;
+  @Column()
+  readonly password: string;
 }

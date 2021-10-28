@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import {LocalStrategy} from "./local.strategy";
-import {UsersModule} from "../users/users.module";
-import {PassportModule} from "@nestjs/passport";
+import { LocalStrategy } from './local.strategy';
+import { UsersModule } from '../users/users.module';
+import { PassportModule } from '@nestjs/passport';
 
 describe('AuthService', () => {
   let service: AuthService;

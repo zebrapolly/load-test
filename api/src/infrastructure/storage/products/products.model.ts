@@ -1,5 +1,5 @@
-import { Column, Generated, PrimaryGeneratedColumn } from "typeorm";
-import { Product } from "../../../domain";
+import { Column, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm';
+import { Product } from '../../../domain';
 
 export class ProductsModel implements Product {
     @PrimaryGeneratedColumn()

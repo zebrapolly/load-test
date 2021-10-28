@@ -1,16 +1,26 @@
-import { Controller, Get, Request, Query, Post, Body, UseGuards, Param, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Request,
+  Query,
+  Post,
+  Body,
+  UseGuards,
+  Param,
+  HttpCode,
+} from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
-import { ProductsService } from "./products/products.service";
-import { CardsService } from "./cards/cards.service";
+import { ProductsService } from './products/products.service';
+import { CardsService } from './cards/cards.service';
 
 @Controller()
 export class AppController {
   constructor(
-      private authService: AuthService,
-      private productsService: ProductsService,
-      private cardService: CardsService
+    private authService: AuthService,
+    private productsService: ProductsService,
+    private cardService: CardsService,
   ) {}
 
   @UseGuards(LocalAuthGuard)

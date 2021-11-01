@@ -13,22 +13,15 @@ export class ProductsAdapter {
   ) {}
 
   findOne(params?: IProductSearchParams) {
-    const query: FindOneOptions = {};
-    if (params.title) {
-      query.where = {
-        title: Raw(alias =>`LOWER(${alias}) Like '%${params.title.toLowerCase()}%'`)
-      }
-    }
-    return this.productsRepository.findOne(query);
+    const query = this.productsRepository.createQueryBuilder().select().where(params);
+    return query.getOne();
   }
 
   find(params?: IProductSearchParams) {
-    const query: FindManyOptions = {};
+    const query = this.productsRepository.createQueryBuilder().select();
     if (params.title) {
-      query.where = {
-        title: Raw(alias =>`LOWER(${alias}) Like '%${params.title.toLowerCase()}%'`)
-      }
-    }
-    return this.productsRepository.find(query);
+      query.andWhere('product_with_idx @@ to_tsquery(:query);', {query: params.title})
+    };
+    return query.getMany();
   }
 }

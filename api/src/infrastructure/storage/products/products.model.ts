@@ -1,4 +1,4 @@
-import { Column, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Generated, Index, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from '../../../domain';
 
 @Entity('products')
@@ -8,6 +8,7 @@ export class ProductsModel implements Product {
 
   @Column({ name: 'system_id', type: 'uuid'})
   @Generated('uuid')
+  @Index({ unique: true })
   readonly systemId: string;
 
   @Column()
@@ -15,4 +16,7 @@ export class ProductsModel implements Product {
 
   @Column()
   readonly description: string;
+
+  @Column("tsvector", { select: false })
+  readonly product_with_idx: any;
 }

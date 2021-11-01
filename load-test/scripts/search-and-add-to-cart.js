@@ -71,7 +71,7 @@ export default function () {
 
         const searchResponseVars = searchResponse.json();
         const randomIndex = randomIntFromInterval(0, searchResponseVars.length-1);
-        const chosenVarId = searchResponseVars[randomIndex].id;
+        const chosenVarId = searchResponseVars[randomIndex].systemId;
         const getProductParams = {
             headers: {
                 Authorization: 'Bearer ' + accessToken
